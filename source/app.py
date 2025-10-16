@@ -48,3 +48,13 @@ async def verify_slack_account(slack_id, request: Request):
         return {"response": "User verified", "ok": True}
     else:
         return {"response": "Invalid verification code", "ok": True}
+
+@app.get("/api/v1/users/{slack_id}/data")
+async def get_data(slack_id):
+    return {"response": db.query_by_slack_id(slack_id), "ok": True}
+
+@app.post("/api/v1/users/{slack_id}/balance")
+async def get_balance(slack_id, request: Request):
+    body = await request.body()
+    db.update_balance(slack_id=slack_id, balance=body.get("balance"))
+    return {"response": "Balance updated", "ok": True}
