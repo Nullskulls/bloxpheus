@@ -64,7 +64,7 @@ def return_user_home(user_data):
                         "text": "Edit",
                         "emoji": True
                     },
-                    "value": "click_me_123",
+                    "value": user_data["slack_id"],
                     "action_id": "edit_email"
                 }
             },
@@ -134,3 +134,75 @@ def return_user_home(user_data):
             }
         ]
     }
+
+def unknown_user():
+    return {
+	"type": "home",
+	"blocks": [
+		{
+			"type": "header",
+			"text": {
+				"type": "plain_text",
+				"text": "Hackaverse Home",
+				"emoji": True
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Uh oh it looks like you're not part of the hackaverse :( \n <https://www.roblox.com/games/121862977119677/Hackaverse-Onboarding | Join the hackaverse today>"
+			}
+		},
+		{
+			"type": "divider"
+		}
+	]
+}
+
+
+def edit_email():
+    return {
+        "type": "modal",
+        "callback_id": "edit_email_submit",
+        "title": {"type": "plain_text", "text": "Hackaverse"},
+        "submit": {"type": "plain_text", "text": "Submit"},
+        "close": {"type": "plain_text", "text": "Cancel"},
+        "blocks": [
+            {"type": "divider"},
+            {
+                "type": "input",
+                "block_id": "email_block",
+                "label": {"type": "plain_text", "text": "Edit Email Address"},
+                "element": {
+                    "type": "plain_text_input",
+                    "action_id": "email_input"
+                }
+            }
+        ]
+    }
+
+def edit_api_key():
+    return {
+        "type": "modal",
+        "callback_id": "edit_key_submit",
+        "title": {"type": "plain_text", "text": "Hackaverse"},
+        "submit": {"type": "plain_text", "text": "Submit"},
+        "close": {"type": "plain_text", "text": "Cancel"},
+        "blocks": [
+            {"type": "divider"},
+            {
+                "type": "input",
+                "block_id": "key_block",
+                "label": {"type": "plain_text", "text": "Edit Hackatime API Key"},
+                "element": {
+                    "type": "plain_text_input",
+                    "action_id": "key_input"
+                }
+            }
+        ]
+    }
+

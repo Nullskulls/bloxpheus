@@ -38,6 +38,21 @@ def add_user(name= None, slack_id=None, email= None, coding_time=0, api_key=None
     conn.commit()
     conn.close()
 
+
+def update_email(slack_id, email):
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET email_address = %s WHERE slack_id = %s", (email, slack_id))
+    conn.commit()
+    conn.close()
+
+def update_api_key(slack_id, api_key):
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET api_key = %s WHERE slack_id = %s", (api_key, slack_id))
+    conn.commit()
+    conn.close()
+
 conn = connect()
 cursor = conn.cursor()
 
