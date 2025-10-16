@@ -62,7 +62,7 @@ def remove_roblox_account(slack_id):
 def update_balance(slack_id, balance):
     conn = connect()
     cursor = conn.cursor()
-    cursor.execute("UPDATE users SET balance = %s where slack_id = %s", (balance, slack_id))
+    cursor.execute("UPDATE users SET bobux_balance = %s where slack_id = %s", (balance, slack_id))
     conn.commit()
     conn.close()
 

@@ -37,7 +37,7 @@ async def get_slack_account(slack_id, request: Request):
 async def verify_slack_account(slack_id, request: Request):
     data = db.get_verification_data(slack_id)
     body = await request.body()
-    if (datetime.now < data["verification_code"]) > datetime.timedelta(minutes=30):
+    if (datetime.now < data["request_time"]) > datetime.timedelta(minutes=30):
         return {"response": "Verification code expired", "ok": True}
     elif body.get("verification_code") == data["verification_code"]:
         result = client.users_info(user=slack_id)
