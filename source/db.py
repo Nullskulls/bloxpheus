@@ -1,4 +1,4 @@
-import os
+import os, datetime, secrets
 import mysql.connector
 from dotenv import load_dotenv
 
@@ -53,6 +53,37 @@ def update_api_key(slack_id, api_key):
     conn.commit()
     conn.close()
 
+def remove_roblox_account(slack_id):
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET roblox_user = NULL where slack_id = %s", (slack_id,))
+    conn.commit()
+    conn.close()
+
+def add_verification_request(roblox_user, slack_id):
+    conn = connect()
+    cursor = conn.cursor(dictionary=True)
+    data = cursor.execute("SELECT * FROM request_logs WHERE slack_id = %s", (slack_id,))
+    temp_code = ''.join(secrets.choice('0123456789') for _ in range(12))
+    if not data:
+        cursor.execute("INSERT INTO request_logs (request_time, slack_id, roblox_user, verification_code) VALUES (%s, %s, %s, %s)", (datetime.now(), slack_id, roblox_user, temp_code))
+    elif (datetime.now() - data.get("request_time")) > datetime.timedelta(minutes=30):
+        cursor.execute("UPDATE request_logs SET verification_code = %s WHERE slack_id = %s", (temp_code, slack_id))
+    else:
+        conn.close()
+        return None
+    conn.commit()
+    conn.close()
+    return temp_code
+
+def get_verification_data(slack_id):
+    conn = connect()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM request_logs WHERE slack_id = %s", (slack_id,))
+    data = cursor.fetchone()
+    conn.close()
+    return data
+
 conn = connect()
 cursor = conn.cursor()
 
@@ -69,5 +100,14 @@ CREATE TABLE IF NOT EXISTS users (
 );
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS request_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    request_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    slack_id VARCHAR(64) NOT NULL,
+    roblox_user VARCHAR(255),
+    verification_code VARCHAR(32)
+);
+""")
 conn.commit()
 conn.close()

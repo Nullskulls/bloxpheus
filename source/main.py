@@ -39,6 +39,14 @@ def build_app(api_key, signing_secret):
             view=home.edit_api_key()
         )
 
+    @app.action("remove_roblox_account")
+    def remove_roblox_account(client, body, ack):
+        ack()
+        slack_id = body["user"]["id"]
+        db.remove_roblox_account(slack_id)
+        user_data = db.query_by_slack_id(slack_id)
+        client.views_publish(user_id=slack_id, view=home.return_user_home(user_data))
+
     @app.view("edit_email_submit")
     def edit_email_submit(client, body, ack):
         ack()

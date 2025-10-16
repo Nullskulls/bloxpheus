@@ -6,7 +6,7 @@ def return_user_home(user_data):
     api_key = user_data['api_key']
     roblox_user = user_data['roblox_user']
     bobux_balance = user_data['bobux_balance']
-    return {
+    home = {
         "type": "home",
         "blocks": [
             {
@@ -134,6 +134,10 @@ def return_user_home(user_data):
             }
         ]
     }
+    if not roblox_user:
+        home["blocks"].pop(11)
+        home["blocks"].pop(11)
+    return home
 
 def unknown_user():
     return {
