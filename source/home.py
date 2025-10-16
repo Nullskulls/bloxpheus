@@ -6,6 +6,8 @@ def return_user_home(user_data):
     api_key = user_data['api_key']
     roblox_user = user_data['roblox_user']
     bobux_balance = user_data['bobux_balance']
+    if not api_key:
+        api_key = "xxxxxxxx"
     home = {
         "type": "home",
         "blocks": [

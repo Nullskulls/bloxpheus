@@ -1,7 +1,7 @@
-import os, datetime, secrets
+import os, secrets
 import mysql.connector
 from dotenv import load_dotenv
-
+from datetime import datetime, timedelta, timezone
 load_dotenv()
 db_host = os.getenv("DB_HOST")
 db_port = os.getenv("DB_PORT")
@@ -69,15 +69,19 @@ def update_balance(slack_id, balance):
 def add_verification_request(roblox_user, slack_id):
     conn = connect()
     cursor = conn.cursor(dictionary=True)
-    data = cursor.execute("SELECT * FROM request_logs WHERE slack_id = %s", (slack_id,))
+    cursor.execute("SELECT * FROM request_logs WHERE slack_id = %s", (slack_id,))
+    data = cursor.fetchone()
     temp_code = ''.join(secrets.choice('0123456789') for _ in range(12))
     if not data:
         cursor.execute("INSERT INTO request_logs (request_time, slack_id, roblox_user, verification_code) VALUES (%s, %s, %s, %s)", (datetime.now(), slack_id, roblox_user, temp_code))
-    elif (datetime.now() - data.get("request_time")) > datetime.timedelta(minutes=30):
-        cursor.execute("UPDATE request_logs SET verification_code = %s WHERE slack_id = %s", (temp_code, slack_id))
     else:
-        conn.close()
-        return None
+        req_time = data["request_time"]
+        req_time = req_time.replace(tzinfo=timezone.utc)
+        if (datetime.now(timezone.utc) - req_time) > timedelta(minutes=30):
+            cursor.execute("UPDATE request_logs SET verification_code = %s, request_time = NOW() WHERE slack_id = %s",(temp_code, slack_id))
+        else:
+            conn.close()
+            return None
     conn.commit()
     conn.close()
     return temp_code
