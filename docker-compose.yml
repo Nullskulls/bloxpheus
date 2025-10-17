@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - SLACK_API_KEY=${SLACK_API_KEY}
+      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
+      - SOCKET_ID=${SOCKET_ID}
+      - API_KEY=${API_KEY}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+    restart: unless-stopped
+    command: uvicorn source.app:app --host 0.0.0.0 --port 8000
+
+  slack-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SLACK_API_KEY=${SLACK_API_KEY}
+      - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
+      - SOCKET_ID=${SOCKET_ID}
+      - API_KEY=${API_KEY}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+    restart: unless-stopped
+    command: python source/main.py
