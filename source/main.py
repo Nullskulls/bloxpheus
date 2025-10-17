@@ -75,6 +75,9 @@ def build_app(api_key, signing_secret):
     return app
 
 if __name__ == "__main__":
+    # Initialize database before starting the app
+    db.initialize_database()
+
     app = build_app(slack_api_key, slack_signing_secret)
     handler = SocketModeHandler(app, socket_id)
     handler.start()
