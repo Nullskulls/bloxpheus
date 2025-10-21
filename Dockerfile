@@ -33,8 +33,9 @@ COPY source/ ./source/
 COPY .env* ./
 
 # Expose port for FastAPI application
-EXPOSE 8000
+EXPOSE 44000
 
 # Default command runs the Slack bot
 # To run the FastAPI app instead: docker run <image> uvicorn source.app:app --host 0.0.0.0 --port 8000
 CMD ["python", "source/main.py"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "44000"]
