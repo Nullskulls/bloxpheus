@@ -94,30 +94,41 @@ def get_verification_data(slack_id):
     conn.close()
     return data
 
-conn = connect()
-cursor = conn.cursor()
+def initialize_database():
+    """Initialize database tables. Call this once on startup."""
+    try:
+        conn = connect()
+        cursor = conn.cursor()
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    slack_uid VARCHAR(64) UNIQUE NOT NULL,
-    coding_time INT DEFAULT 0,
-    email_address VARCHAR(255),
-    api_key VARCHAR(255),
-    roblox_user VARCHAR(255),
-    bobux_balance INT DEFAULT 0
-);
-""")
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            slack_id VARCHAR(64) UNIQUE NOT NULL,
+            coding_time INT DEFAULT 0,
+            email_address VARCHAR(255),
+            api_key VARCHAR(255),
+            roblox_user VARCHAR(255),
+            bobux_balance INT DEFAULT 0
+        );
+        """)
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS request_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    request_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    slack_id VARCHAR(64) NOT NULL,
-    roblox_user VARCHAR(255),
-    verification_code VARCHAR(32)
-);
-""")
-conn.commit()
-conn.close()
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS request_logs (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            request_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            slack_id VARCHAR(64) NOT NULL,
+            roblox_user VARCHAR(255),
+            verification_code VARCHAR(32)
+        );
+        """)
+        conn.commit()
+        conn.close()
+        print("Database initialized successfully")
+    except Exception as e:
+        print(f"Database initialization error: {e}")
+        raise
+
+# Only initialize database if running as main module (for testing)
+if __name__ == "__main__":
+    initialize_database()

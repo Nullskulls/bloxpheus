@@ -12,6 +12,11 @@ bot_token = os.getenv("SLACK_API_KEY")
 app = FastAPI()
 client = WebClient(token=bot_token)
 
+# Initialize database on startup
+@app.on_event("startup")
+async def startup_event():
+    db.initialize_database()
+
 async def verify_api_key(request: Request):
     key = request.headers.get("key")
     if key != api_key:
