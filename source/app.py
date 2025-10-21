@@ -64,4 +64,4 @@ async def get_balance(slack_id, payload: dict = Body(...)):
     return {"response": "Balance updated", "ok": True}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=44000)
+    uvicorn.run(app, host="0.0.0.0", port=45000)
