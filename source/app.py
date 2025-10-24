@@ -24,6 +24,8 @@ async def verify_api_key(request: Request):
 
 @app.post("/api/v1/users/signup/{slack_id}/get/verification", dependencies=[Depends(verify_api_key)])
 async def get_slack_account(slack_id, payload: dict = Body(...)):
+    if not (payload.get("roblox_user") and slack_id):
+        return {"response": "Invalid parameters", "ok" : False}
     user = db.query_by_slack_id(slack_id)
     if user is not None and user.get("roblox_user") is not None:
         return {"response": "User already exists", "ok": True}
